@@ -2,28 +2,23 @@ package main
 
 import (
 	"log"
-	"net/http"
-	"time"
-	//"router/routers.go"
+
+	gostart "github.com/iriskin77/go_start"
+	"github.com/iriskin77/go_start/pkg/handler"
+	"github.com/iriskin77/go_start/pkg/repository"
+	"github.com/iriskin77/go_start/pkg/service"
 )
 
 func main() {
-	// r := mux.NewRouter()
-	// r.HandleFunc("/products/{key}", ProductHandler)
-	// r.HandleFunc("/articles/{category}/", ArticlesCategoryHandler)
-	// r.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler)
-	http.Handle("/", r)
+	// инициализируем экземпляр сервера с помощью ключевого слова new(). Благодаря New мы передаем указатель на сервер
 
-	srv := &http.Server{
-		Handler: r,
-		Addr:    "0.0.0.0:9090",
-		// Good practice: enforce timeouts for servers you create!
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+	repos := repository.NewRepository()
+	services := service.NewService(repos)
+	handlers := handler.NewHandler(services)
+
+	server := new(gostart.Server)
+
+	if err := server.Run("9090", handlers.InitRoutes()); err != nil {
+		log.Fatalf("error occured while ruuning http server %s", err.Error())
 	}
-
-	//http.ListenAndServe("127.0.0.1:9090", r)
-
-	log.Fatal(srv.ListenAndServe())
-
 }
