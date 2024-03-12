@@ -12,9 +12,10 @@ type Server struct {
 }
 
 // Структура имеет два метода: 1) Run для запуска сервера и 2) Shutdown для завершения работы
-func (s *Server) Run(port string) error {
+func (s *Server) Run(port string, handler http.Handler) error {
 	s.httServer = &http.Server{
 		Addr:         ":" + port,
+		Handler:      handler,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}

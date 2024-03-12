@@ -1,20 +1,21 @@
 package main
 
 import (
-	"log"
-
 	gostart "github.com/iriskin77/go_start"
 	"github.com/iriskin77/go_start/pkg/handler"
 	"github.com/iriskin77/go_start/pkg/repository"
 	"github.com/iriskin77/go_start/pkg/service"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 func main() {
 
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	if err := initConfig(); err != nil {
-		log.Fatalf("error initialization config %s", err.Error())
+		logrus.Fatalf("error initialization config %s", err.Error())
 	}
 
 	// Инициализируем БД
@@ -28,7 +29,7 @@ func main() {
 	})
 
 	if err != nil {
-		log.Fatal("failed to initialize db: %s", err.Error())
+		logrus.Fatal("failed to initialize db: %s", err.Error())
 	}
 
 	// инициализируем экземпляр сервера с помощью ключевого слова new(). Благодаря New мы передаем указатель на сервер
@@ -40,7 +41,7 @@ func main() {
 	server := new(gostart.Server)
 
 	if err := server.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		log.Fatalf("error occured while ruuning http server %s", err.Error())
+		logrus.Fatalf("error occured while ruuning http server %s", err.Error())
 	}
 }
 
